@@ -17,10 +17,10 @@ const SECS_PER_QUESTION = 30;
 const initialState = {
   questions: [],
 
-  // 'loading', 'error', 'ready', 'active', 'finished'
+  // These are the different status our app can be in -> 'loading', 'error', 'ready', 'active', 'finished'
   status: "loading",
-  index: 0,
-  answer: null,
+  index: 0, // To store the current question object index
+  answer: null, // To store the current question selected option index
   points: 0,
   highscore: 0,
   secondsRemaining: null,
@@ -34,17 +34,20 @@ function reducer(state, action) {
         questions: action.payload,
         status: "ready",
       };
+
     case "dataFailed":
       return {
         ...state,
         status: "error",
       };
+
     case "start":
       return {
         ...state,
         status: "active",
         secondsRemaining: state.questions.length * SECS_PER_QUESTION,
       };
+
     case "newAnswer":
       const question = state.questions.at(state.index);
 
@@ -56,8 +59,10 @@ function reducer(state, action) {
             ? state.points + question.points
             : state.points,
       };
+
     case "nextQuestion":
       return { ...state, index: state.index + 1, answer: null };
+
     case "finish":
       return {
         ...state,
@@ -65,16 +70,9 @@ function reducer(state, action) {
         highscore:
           state.points > state.highscore ? state.points : state.highscore,
       };
+
     case "restart":
       return { ...initialState, questions: state.questions, status: "ready" };
-    // return {
-    //   ...state,
-    //   points: 0,
-    //   highscore: 0,
-    //   index: 0,
-    //   answer: null,
-    //   status: "ready",
-    // };
 
     case "tick":
       return {
@@ -113,10 +111,13 @@ export default function App() {
 
       <Main>
         {status === "loading" && <Loader />}
+
         {status === "error" && <Error />}
+
         {status === "ready" && (
           <StartScreen numQuestions={numQuestions} dispatch={dispatch} />
         )}
+
         {status === "active" && (
           <>
             <Progress
@@ -126,11 +127,13 @@ export default function App() {
               maxPossiblePoints={maxPossiblePoints}
               answer={answer}
             />
+
             <Question
               question={questions[index]}
               dispatch={dispatch}
               answer={answer}
             />
+
             <Footer>
               <Timer dispatch={dispatch} secondsRemaining={secondsRemaining} />
               <NextButton
@@ -142,6 +145,7 @@ export default function App() {
             </Footer>
           </>
         )}
+
         {status === "finished" && (
           <FinishScreen
             points={points}
